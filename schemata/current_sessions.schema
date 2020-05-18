@@ -1,0 +1,3 @@
+create_table :current_session do |t|
+  t.integer :session_id, null: false
+end

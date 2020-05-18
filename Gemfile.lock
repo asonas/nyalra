@@ -39,6 +39,7 @@ GEM
     netrc (0.11.0)
     opus-ruby (1.0.1)
       ffi
+    pg (1.2.3)
     rake (13.0.1)
     rbnacl (3.4.0)
       ffi
@@ -67,6 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   discordrb
+  pg
   rake
   ridgepole
 

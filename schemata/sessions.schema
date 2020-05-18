@@ -1,0 +1,4 @@
+create_table :sessions do |t|
+  t.string :name, null: false
+  t.string :url
+end
