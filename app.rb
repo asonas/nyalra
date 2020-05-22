@@ -24,7 +24,9 @@ bot.message contains: 'ping' do |event|
   event.respond 'pong'
 end
 
-bot.command :setup do |event, message|
+desc = "アイロン卓のSpreadsheetに `csv` というシートからいい感じにキャラクターを読み込みます。この時に読まれたSpreadsheetを現在のセッションとして扱います。"
+usage = "!setup https://docs.google.com/spreadsheets/d/15kAbGZYsSN3rlMt-RNi4Xg91AsFtYR9tFILYOXVc3a4/edit"
+bot.command :setup, description: desc, usage: usage do |event, message|
   url = message.match %r{https?://[\w_.!*\/')(-]+}
 
   unless url
@@ -55,13 +57,59 @@ bot.command :setup do |event, message|
   end
 end
 
-bot.command :add_enemy do |event, name, params|
-  session_id = CurrentSession.first.session_id
-  Charactor.create_enemy! session_id, name, params.gsub(" ", "")
+def show_charactor
+  cs = []
+  CurrentSession.first.session.charactors.each do |c|
+    prefix = if c.npc
+      "[NPC]"
+    else
+      "[PC]"
+    end
+    cs.push "#{prefix} #{c.name}"
+  end
+  cs
+end
+
+desc = "現在のセッションに登録されているキャラクターをすべて表示します。"
+bot.command :show_chara, description: desc do |event|
+  cs = show_charactor
+  event.respond cs.join("\n")
+end
+
+bot.command :show_char, description: desc do |event|
+  cs = show_charactor
+  event.respond cs.join("\n")
+end
+
+bot.command :add_npc, description: "NPCをパラメーター付きで追加できます。", usage: "!add_npc <キャラ名> dex:65 str:50" do |event, name, params|
+  begin
+    session_id = CurrentSession.first.session_id
+    c = Charactor.create_npc! session_id, name, params&.gsub(" ", "")
+    event.respond "#{c.name}を追加したよ"
+  rescue ActiveRecord::RecordInvalid => e
+    event.respond "すでに登録されてるっぽい"
+  end
+end
+
+bot.command :del_npc, description: "追加しているNPCを削除できます。", usage: "!del <キャラ名>" do |event, raw_name|
+  name = raw_name.strip
+  message = []
+  ActiveRecord::Base.transaction do
+    c = CurrentSession.first.session.charactors.where(npc: true).where(id: name).first
+    if c
+      message.push "#{c.name}"
+      c.destroy!
+      message.push "削除したよ"
+    else
+      message.push "名前が #{name} の敵は見つからなかったよ"
+    end
+  end
+
+  event.respond message.join("\n")
 end
 
 Charactor.column_names.each do |col|
-  bot.command "order_by_#{col}".to_sym do |event|
+  bot.command "order_by_#{col}".to_sym, description: "キャラクターを#{col}順に列挙できます。" do |event|
     cs = []
     session = CurrentSession.first.session
     session.charactors.order({ col => :desc }).each.with_index(1) do |c, i|
@@ -72,11 +120,25 @@ Charactor.column_names.each do |col|
   end
 end
 
-bot.command :current_session do |event|
+bot.command :current_session, description: "現在のセッションの情報を表示します" do |event|
   session = CurrentSession.first.session
   event.respond "session_id: #{session.id}"
   event.respond session.name
   event.respond session.url
+end
+
+bot.command :help do |event|
+  message = []
+  bot.commands.each do |command, a|
+    attr = a.attributes
+    message.push "**#{command}**"
+    message.push attr[:description]
+    message.push "使い方: `#{attr[:usage]}`" if attr[:usage]
+  end
+
+  event.respond "その他細かい話はこちら: https://scrapbox.io/ironing/Nyalrathotep"
+
+  event.respond message.join("\n")
 end
 
 bot.run

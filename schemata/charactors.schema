@@ -13,6 +13,7 @@ create_table :charactors do |t|
   t.integer :san
   t.json :raw_data
   t.boolean :enemy, null: false, default: false
+  t.boolean :npc, null: false, default: false
 
   add_index :charactors, :session_id
   add_index :charactors, [:session_id, :name], unique: true

@@ -2,7 +2,8 @@ require 'csv'
 require 'json'
 
 class Charactor < ActiveRecord::Base
-  ACCEPTED_ENEMY_ATTRIBUTES = %w[
+  validates :name, uniqueness: { scope: :session_id }
+  ACCEPTED_NPC_ATTRIBUTES = %w[
     name
     siz
     app
@@ -40,12 +41,15 @@ class Charactor < ActiveRecord::Base
     end
   end
 
-  def self.create_enemy!(session_id, name, params)
-    i = self.new(session_id: session_id, name: name, enemy: true)
-    i.parse_params(params)
-    i.validate_params
-    i.assign_with_valid_params
+  def self.create_npc!(session_id, name, params)
+    i = self.new(session_id: session_id, name: name, npc: true)
+    if params.present?
+      i.parse_params(params)
+      i.validate_params
+      i.assign_with_valid_params
+    end
     i.save!
+    i
   end
 
   def parse_params(params)
@@ -59,7 +63,7 @@ class Charactor < ActiveRecord::Base
   # inbalid => "dex:10,str:"
   def validate_params
     parsed_params.each do |key, val|
-      unless ACCEPTED_ENEMY_ATTRIBUTES.include? key
+      unless ACCEPTED_NPC_ATTRIBUTES.include? key
         raise "Do not attribute: #{key}"
       end
       if val.blank?
