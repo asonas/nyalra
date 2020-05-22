@@ -1,3 +1,5 @@
-create_table :current_session do |t|
+create_table :current_sessions do |t|
   t.integer :session_id, null: false
+
+  add_index :current_sessions, :session_id
 end
