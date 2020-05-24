@@ -14,8 +14,6 @@ class SpreadsheetClient
   TOKEN_PATH = "token.yaml".freeze
   SCOPE = Google::Apis::SheetsV4::AUTH_SPREADSHEETS_READONLY
 
-  SPREADSHEET_ID = "15kAbGZYsSN3rlMt-RNi4Xg91AsFtYR9tFILYOXVc3a4"
-
   attr_accessor :url
 
   def initialize(url)
