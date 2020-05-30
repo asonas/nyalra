@@ -92,7 +92,7 @@ bot.command :del_npc, description: "追加しているNPCを削除できます�
   name = raw_name.strip
   message = []
   ActiveRecord::Base.transaction do
-    c = CurrentSession.first.session.charactors.where(npc: true).where(id: name).first
+    c = CurrentSession.first.session.charactors.where(npc: true).where(name: name).first
     if c
       message.push "#{c.name}"
       c.destroy!
