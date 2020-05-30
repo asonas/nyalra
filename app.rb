@@ -10,9 +10,6 @@ require 'erb'
 
 # ToDo: error handling
 # ToDo: update
-# ToDo: set_current_session
-# ToDo: fetch credential
-
 
 ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read('./config/database.yml')).result)
 ActiveRecord::Base.establish_connection(:production)
