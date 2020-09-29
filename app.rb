@@ -88,7 +88,7 @@ bot.command :add_npc, description: "NPCをパラメーター付きで追加で�
   end
 end
 
-bot.comand :update_npc, description: "NPCのパラメーターを更新できます。（同じパラメーターを指定した場合は上書きされます）", usage: "!update_npc <キャラ名> dex:55" do |event, name, params|
+bot.command :update_npc, description: "NPCのパラメーターを更新できます。（同じパラメーターを指定した場合は上書きされます）", usage: "!update_npc <キャラ名> dex:55" do |event, name, params|
   begin
     session_id = CurrentSession.first.session_id
     charactor = Charactor.find_by(session_id, name, npc: true)
