@@ -14,8 +14,8 @@ require 'erb'
 ActiveRecord::Base.configurations = YAML.load(ERB.new(File.read('./config/database.yml')).result)
 ActiveRecord::Base.establish_connection(:production)
 
-bot = Discordrb::Commands::CommandBot.new token: ENV["DISCORD_BOT_TOKEN"], prefix: '!'
 
+bot = Discordrb::Commands::CommandBot.new token: ENV["DISCORD_BOT_TOKEN"], prefix: '!'
 
 bot.message contains: 'ping' do |event|
   event.respond 'pong'
@@ -147,6 +147,10 @@ bot.command :help do |event|
   event.respond "その他細かい話はこちら: https://scrapbox.io/ironing/Nyalrathotep"
 
   event.respond message.join("\n")
+end
+
+bot.command :revision do |event|
+  event.respond `git rev-parse HEAD`
 end
 
 bot.run
