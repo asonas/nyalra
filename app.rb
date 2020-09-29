@@ -1,6 +1,7 @@
 require 'discordrb'
 
 require 'active_record'
+require 'ruboty/google_image'
 require './lib/models/charactor'
 require './lib/models/session'
 require './lib/models/current_session'
@@ -151,6 +152,12 @@ end
 
 bot.command :revision do |event|
   event.respond `git rev-parse HEAD`
+end
+
+bot.command :image do |event, *query|
+  if url = Ruboty::GoogleImage::Client.new(query: query.join(" ")).get
+    event.respond url
+  end
 end
 
 bot.run
