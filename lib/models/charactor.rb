@@ -52,6 +52,13 @@ class Charactor < ActiveRecord::Base
     i
   end
 
+  def update_parameter(params)
+    self.parse_params(params)
+    self.validate_params
+    self.assign_with_valid_params
+    self.update!
+  end
+
   def parse_params(params)
     @parsed_params ||= params.split(",").map do |param|
       key, val = param.split(":")

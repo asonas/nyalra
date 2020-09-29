@@ -88,6 +88,17 @@ bot.command :add_npc, description: "NPCをパラメーター付きで追加で�
   end
 end
 
+bod.comand :update_npc, description: "NPCのパラメーターを更新できます。（同じパラメーターを指定した場合は上書きされます）", usage: "!update_npc <キャラ名> dex:55" do |event, name, params|
+  begin
+    session_id = CurrentSession.first.session_id
+    charactor = Charactor.find_by(session_id, name, npc: true)
+    charactor.update_parameter(params)
+    event.respond "#{c.name}を更新したよ"
+  rescue ActiveRecord::RecordInvalid => e
+    event.respond e
+  end
+end
+
 bot.command :del_npc, description: "追加しているNPCを削除できます。", usage: "!del <キャラ名>" do |event, raw_name|
   name = raw_name.strip
   message = []
